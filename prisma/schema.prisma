@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,94 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model code_frequency {
+  id           String       @id
+  date         DateTime
+  additions    Int
+  deletions    Int
+  repo_id      String
+  repositories repositories @relation(fields: [repo_id], references: [id])
+}
+
+model collaborators {
+  id           String       @id
+  user_id      String
+  repo_id      String
+  repositories repositories @relation(fields: [repo_id], references: [id])
+  users        users        @relation(fields: [user_id], references: [id])
+
+  @@unique([user_id, repo_id], map: "colab_user_repo_unique")
+}
+
+model followers {
+  id                                  String @id
+  follower_id                         String
+  following_id                        String
+  users_followers_follower_idTousers  users  @relation("followers_follower_idTousers", fields: [follower_id], references: [id])
+  users_followers_following_idTousers users  @relation("followers_following_idTousers", fields: [following_id], references: [id])
+
+  @@unique([follower_id, following_id], map: "followers_unique")
+}
+
+model licenses {
+  id           String         @id
+  name         String         @db.VarChar(255)
+  key          String         @db.VarChar(30)
+  url          String
+  repositories repositories[]
+}
+
+model repositories {
+  id                String           @id
+  name              String           @db.VarChar(30)
+  full_name         String           @db.VarChar(60)
+  language          String           @db.VarChar(30)
+  has_issues        Boolean
+  forks_count       Int
+  open_issues_count Int
+  watchers_count    Int
+  is_template       Boolean
+  private           Boolean
+  html_url          String
+  description       String
+  fork              Boolean
+  url               String
+  size              Int
+  created_at        DateTime
+  updated_at        DateTime
+  pushed_at         DateTime
+  owner_id          String
+  license_id        String?
+  licenses          licenses?        @relation(fields: [license_id], references: [id])
+  users             users            @relation(fields: [owner_id], references: [id])
+  code_frequency    code_frequency[]
+  collaborators     collaborators[]
+
+  @@unique([owner_id, name], map: "user_repo_unique")
+}
+
+model users {
+  id                                      String          @id
+  login                                   String          @unique @db.VarChar(50)
+  name                                    String?         @db.VarChar(255)
+  avatar_url                              String          @db.VarChar(255)
+  html_url                                String          @db.VarChar(255)
+  url                                     String          @unique
+  site_admin                              Boolean
+  bio                                     String?
+  location                                String?
+  type                                    UserType
+  created_at                              DateTime
+  updated_at                              DateTime
+  collaborators                           collaborators[]
+  followers_followers_follower_idTousers  followers[]     @relation("followers_follower_idTousers")
+  followers_followers_following_idTousers followers[]     @relation("followers_following_idTousers")
+  repositories                            repositories[]
+}
+
+enum UserType {
+  Organization
+  User
 }
