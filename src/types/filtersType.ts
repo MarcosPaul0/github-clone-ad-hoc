@@ -1,0 +1,20 @@
+export interface FiltersType {
+  language: string | null;
+  repositoryName: string | null;
+  ownerLogin: string | null;
+  licenseKey: string | null;
+  hasIssues: boolean | null;
+  isTemplate: boolean | null;
+  minSize: number | null;
+  maxSize: number | null;
+  collaboratorsMinCount: number | null;
+  collaboratorsMaxCount: number | null;
+  forksMinCount: number | null;
+  forksMaxCount: number | null;
+  creationStart: string | null;
+  creationEnd: string | null;
+  updateStart: string | null;
+  updateEnd: string | null;
+  pushedStart: string | null;
+  pushedEnd: string | null;
+}
