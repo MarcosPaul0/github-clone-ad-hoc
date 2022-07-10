@@ -1,0 +1,17 @@
+.container {
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar {
+  height: calc(100vh - 4rem);
+
+  position: sticky;
+
+  left: 0;
+  top: 4rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
